@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -45,7 +46,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     // Current stable version
-    def koin_version= "2.2.2"
+    def koin_version = "2.2.2"
     // Koin for Android
     implementation "org.koin:koin-android:$koin_version"
     implementation "org.koin:koin-androidx-scope:$koin_version"
@@ -54,6 +55,11 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.2.0-alpha04"
     //Material componentes
     implementation 'com.google.android.material:material:1.0.0'
+    // optional - Kotlin Extensions and Coroutines support for Room
+    def room_version = "2.3.0"
+    implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

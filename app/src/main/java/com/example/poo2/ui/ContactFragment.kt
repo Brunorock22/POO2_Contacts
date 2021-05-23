@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.poo2.adapter.ContactAdapter
@@ -17,7 +16,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ContactFragment : Fragment() {
     private val contactViewModel by sharedViewModel<ContactViewModel>()
-    lateinit var contactAdapter: ContactAdapter
+    private lateinit var contactAdapter: ContactAdapter
 
     lateinit var binding: FragmentContactsBinding
 
@@ -25,7 +24,7 @@ class ContactFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentContactsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -34,11 +33,15 @@ class ContactFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
 
-        contactViewModel.contacts.observe(viewLifecycleOwner, Observer {
-            if (it.size == 0){
+        contactViewModel.contacts.observe(viewLifecycleOwner, {
+            if (it.isNullOrEmpty()) {
                 binding.imageEmptyContacts.visibility = View.VISIBLE
-            }else{
+                binding.recyclerContacts.visibility = View.GONE
+            } else {
+                binding.recyclerContacts.visibility = View.VISIBLE
                 binding.imageEmptyContacts.visibility = View.GONE
+                contactAdapter.submitList(it)
+                contactAdapter.notifyDataSetChanged()
             }
         })
 
@@ -59,9 +62,6 @@ class ContactFragment : Fragment() {
                 goToDetails()
             }
         }
-        val contactList = contactViewModel.contacts.value
-        contactAdapter.submitList(contactList)
-        contactAdapter.notifyDataSetChanged()
 
         binding.recyclerContacts.adapter = ConcatAdapter(contactAdapter)
         binding.recyclerContacts.layoutManager =
@@ -69,16 +69,16 @@ class ContactFragment : Fragment() {
 
     }
 
-    private fun openDeleteDialog(position: Int){
+    private fun openDeleteDialog(position: Int) {
         val alertDialog: AlertDialog? = activity?.let {
             val builder = AlertDialog.Builder(it)
             builder.apply {
                 setPositiveButton(R.string.ok,
-                    DialogInterface.OnClickListener {
-                        _, _ ->
+                    DialogInterface.OnClickListener { _, _ ->
                         removeContact(position)
                     })
-                setNegativeButton(R.string.cancel
+                setNegativeButton(
+                    R.string.cancel
                 ) { _, _ ->
                     // User cancelled the dialog
                 }
@@ -91,16 +91,18 @@ class ContactFragment : Fragment() {
     }
 
     private fun removeContact(position: Int) {
-        contactViewModel.contacts.value?.removeAt(position)
-        contactViewModel.contacts.postValue(contactViewModel.contacts.value)
-
-
-        contactAdapter.notifyItemRemoved(position)
-        contactViewModel.contacts.value?.size?.let {
-            contactAdapter.notifyItemRangeChanged(position,
-                it
-            )
+        contactViewModel.contacts.value?.get(position)?.let {
+            contactViewModel.removeContact(it) {
+                contactViewModel.contacts.value?.size?.let { size ->
+                    contactAdapter.notifyItemRangeChanged(
+                        position,
+                        size
+                    )
+                }
+            }
         }
+
+
     }
 
     private fun goToDetails() {

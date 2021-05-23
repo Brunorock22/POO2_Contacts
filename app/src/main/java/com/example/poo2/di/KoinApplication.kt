@@ -14,7 +14,7 @@ class KoinApplication : Application() {
             //inject Android context
             androidContext(this@KoinApplication)
             // use modules
-            modules(mainModule)
+            modules(mainModule, databaseModule)
         }
     }
 }

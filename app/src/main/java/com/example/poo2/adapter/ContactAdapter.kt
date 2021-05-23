@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.poo2.databinding.ItemContactBinding
-import com.example.poo2.model.Contact
+import com.example.poo2.data.model.Contact
 
 class ContactAdapter : ListAdapter<Contact, ContactAdapter.ContactViewHolder>(DIFF_CALLBACK) {
     var gotDeleteItemClickListener: ((position: Int) -> Unit)? = null

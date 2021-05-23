@@ -6,15 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Observer
 import com.example.poo2.databinding.FragmentContactDetailsBinding
-import com.example.poo2.model.Contact
+import com.example.poo2.data.model.Contact
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
 class ContactDetailsFragment : Fragment() {
     private lateinit var binding: FragmentContactDetailsBinding
     private val contactViewModel: ContactViewModel by sharedViewModel()
+    private lateinit var currentContact: Contact
 
 
     override fun onCreateView(
@@ -34,15 +34,15 @@ class ContactDetailsFragment : Fragment() {
 
         binding.detailsSave.setOnClickListener {
             if (contactViewModel.selectContactPosition != null) {
-                editElementInContact(
-                    Contact(
-                        binding.detailsName.text.toString(),
-                        binding.detailsEmail.text.toString(),
-                        binding.detailsNumber.text.toString()
+                    val updatedContact = Contact(
+                        name = binding.detailsName.text.toString(),
+                        email = binding.detailsEmail.text.toString(),
+                        phone = binding.detailsNumber.text.toString()
                     )
-                )
+                updatedContact.contactId  = currentContact.contactId
+                editElementInContact(updatedContact)
             } else {
-                addElemnentInContacts(
+                addElementInContacts(
                     Contact(
                         binding.detailsName.text.toString(),
                         binding.detailsEmail.text.toString(),
@@ -60,7 +60,7 @@ class ContactDetailsFragment : Fragment() {
     private fun feedWhenEdit(position: Int) {
         val contact = contactViewModel.contacts.value?.get(position)
         contact?.let {
-
+            currentContact = it
             binding.run {
                 detailsName.setText(it.name)
                 detailsEmail.setText(it.email)
@@ -69,19 +69,12 @@ class ContactDetailsFragment : Fragment() {
         }
     }
 
-    private fun addElemnentInContacts(contact: Contact) {
-        val newList = contactViewModel.contacts.value
-        newList?.add(contact)
-        contactViewModel.contacts.value = newList
+    private fun addElementInContacts(contact: Contact) {
+        contactViewModel.addContact(contact)
     }
 
     private fun editElementInContact(contact: Contact) {
-        contactViewModel.selectContactPosition?.let {
-            contactViewModel.contacts.value?.set(
-                it,
-                contact
-            )
-        }
+        contactViewModel.updateContact(contact)
     }
 
 }
