@@ -6,14 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import com.example.poo2.databinding.FragmentContactDetailsBinding
 import com.example.poo2.data.model.Contact
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
 class ContactDetailsFragment : Fragment() {
     private lateinit var binding: FragmentContactDetailsBinding
-    private val contactViewModel: ContactViewModel by sharedViewModel()
+    private val contactViewModel: ContactViewModel by activityViewModels()
     private lateinit var currentContact: Contact
 
 

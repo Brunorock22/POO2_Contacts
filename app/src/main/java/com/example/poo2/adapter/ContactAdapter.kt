@@ -59,7 +59,7 @@ class ContactAdapter : ListAdapter<Contact, ContactAdapter.ContactViewHolder>(DI
     companion object {
         val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Contact>() {
             override fun areItemsTheSame(oldItem: Contact, newItem: Contact): Boolean {
-                return newItem.email == oldItem.email
+                return newItem == oldItem
             }
 
             override fun areContentsTheSame(oldItem: Contact, newItem: Contact): Boolean {
@@ -69,4 +69,7 @@ class ContactAdapter : ListAdapter<Contact, ContactAdapter.ContactViewHolder>(DI
         }
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 }

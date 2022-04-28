@@ -2,20 +2,20 @@ package com.example.poo2.ui
 
 import android.R
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.poo2.adapter.ContactAdapter
 import com.example.poo2.databinding.FragmentContactsBinding
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ContactFragment : Fragment() {
-    private val contactViewModel by sharedViewModel<ContactViewModel>()
+    private val contactViewModel: ContactViewModel by activityViewModels()
+
     private lateinit var contactAdapter: ContactAdapter
 
     lateinit var binding: FragmentContactsBinding
@@ -32,16 +32,16 @@ class ContactFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
-
         contactViewModel.contacts.observe(viewLifecycleOwner, {
-            if (it.isNullOrEmpty()) {
-                binding.imageEmptyContacts.visibility = View.VISIBLE
-                binding.recyclerContacts.visibility = View.GONE
-            } else {
-                binding.recyclerContacts.visibility = View.VISIBLE
-                binding.imageEmptyContacts.visibility = View.GONE
-                contactAdapter.submitList(it)
-                contactAdapter.notifyDataSetChanged()
+            binding.run {
+                if (it.isNullOrEmpty()) {
+                    imageEmptyContacts.visibility = View.VISIBLE
+                    recyclerContacts.visibility = View.GONE
+                } else {
+                    recyclerContacts.visibility = View.VISIBLE
+                    imageEmptyContacts.visibility = View.GONE
+                    contactAdapter.submitList(it)
+                }
             }
         })
 
@@ -73,10 +73,11 @@ class ContactFragment : Fragment() {
         val alertDialog: AlertDialog? = activity?.let {
             val builder = AlertDialog.Builder(it)
             builder.apply {
-                setPositiveButton(R.string.ok,
-                    DialogInterface.OnClickListener { _, _ ->
-                        removeContact(position)
-                    })
+                setPositiveButton(
+                    R.string.ok
+                ) { _, _ ->
+                    removeContact(position)
+                }
                 setNegativeButton(
                     R.string.cancel
                 ) { _, _ ->
@@ -91,18 +92,9 @@ class ContactFragment : Fragment() {
     }
 
     private fun removeContact(position: Int) {
-        contactViewModel.contacts.value?.get(position)?.let {
-            contactViewModel.removeContact(it) {
-                contactViewModel.contacts.value?.size?.let { size ->
-                    contactAdapter.notifyItemRangeChanged(
-                        position,
-                        size
-                    )
-                }
-            }
+        contactViewModel.contacts.value?.getOrNull(position)?.let {
+            contactViewModel.removeContact(it)
         }
-
-
     }
 
     private fun goToDetails() {

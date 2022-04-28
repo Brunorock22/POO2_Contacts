@@ -7,4 +7,8 @@ import com.example.poo2.data.model.Contact
 @Database(entities = [Contact::class], version = 1)
 abstract class ContactDatabase:  RoomDatabase() {
     abstract val contactDAO : ContactDAO
+
+    companion object{
+        const val DATABASE_NAME = "contacts_database"
+    }
 }
