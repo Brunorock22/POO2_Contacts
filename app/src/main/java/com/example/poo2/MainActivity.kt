@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private val contactViewModel : ContactViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        contactViewModel.getContacts()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

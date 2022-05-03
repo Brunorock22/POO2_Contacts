@@ -18,10 +18,11 @@ class ContactViewModel @ViewModelInject constructor(
     var contacts: LiveData<List<Contact>> = _contacts
     var selectContactPosition: Int? = null
 
-    init {
+    fun getContacts(){
         viewModelScope.launch {
-            _contacts.postValue(dao.loadAllContacts())
+        _contacts.postValue(dao.loadAllContacts())
         }
+
     }
 
     fun addContact(contact: Contact) {
